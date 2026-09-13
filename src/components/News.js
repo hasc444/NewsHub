@@ -38,7 +38,8 @@ const News=(props)=> {
 
     useEffect(()=>{
       updateNews()
-       document.title=`NewsHub-${this.capitalize(props.category)}`
+       document.title=`NewsHub-${capitalize(props.category)}`
+       // eslint-disable-next-line
     },[])
   
     // const handlePrevClick=async ()=>{
@@ -52,14 +53,16 @@ const News=(props)=> {
     // }
     
     const fetchMoreData = async () => {
-      let url = `https://newsapi.org/v2/top-headlines?country=us&category=${props.category}&apiKey=${props.api_key}&page=${page+1}&pageSize=${props.pageSize}`
-      setpage(page+1)
+      const nextPage = page + 1;
+      let url = `https://newsapi.org/v2/top-headlines?country=us&category=${props.category}&apiKey=${props.api_key}&page=${nextPage}&pageSize=${props.pageSize}`
+      
       let data= await fetch(url)
       let fdata= await data.json()
-      
-      setarticle(article.concat(fdata.articles))
-      settotalResults(fdata.totalResults)
-      setloading(false)
+
+        setarticle(article.concat(fdata.articles))
+        settotalResults(fdata.totalResults)
+        setpage(nextPage)
+  
     }
     return (
       <>
@@ -69,7 +72,7 @@ const News=(props)=> {
          <InfiniteScroll
           dataLength={article.length}
           next={fetchMoreData}
-          hasMore={article.length !== totalResults}
+          hasMore={article.length < totalResults }
           loader={<Spinner/>}>
 
         <div className="container" >
