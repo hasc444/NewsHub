@@ -41,29 +41,35 @@ const News=(props)=> {
        document.title=`NewsHub-${capitalize(props.category)}`
        // eslint-disable-next-line
     },[])
-  
-    // const handlePrevClick=async ()=>{
-    //   setpage(page-1)
-    //   updateNews() 
-    // }
-    
-    // const  handleNextClick=async ()=>{
-    //   setpage(page+1)
-    //   updateNews()
-    // }
-    
-    const fetchMoreData = async () => {
-      const nextPage = page + 1;
-      let url = `https://newsapi.org/v2/top-headlines?country=us&category=${props.category}&apiKey=${props.api_key}&page=${nextPage}&pageSize=${props.pageSize}`
-      
-      let data= await fetch(url)
-      let fdata= await data.json()
 
-        setarticle(article.concat(fdata.articles))
-        settotalResults(fdata.totalResults)
-        setpage(nextPage)
-  
-    }
+//FOR PAGES HANDLE BY BUTTONS
+
+   /* const handlePrevClick=async ()=>{
+      setpage(page-1)
+      updateNews() 
+    }*/
+    
+  /*  const  handleNextClick=async ()=>{
+      setpage(page+1)
+      updateNews()
+    }*/
+
+const fetchMoreData = async () => {
+  let url = `https://newsapi.org/v2/top-headlines?country=us&category=${props.category}&apiKey=${props.api_key}&page=${page + 1}&pageSize=${props.pageSize}`
+
+  let data = await fetch(url)
+  let fdata = await data.json()
+
+  // If new articles exist, append them; otherwise stop loading
+  if (fdata.articles && fdata.articles.length > 0) {
+    setarticle((prev) => prev.concat(fdata.articles))
+    settotalResults(fdata.totalResults)
+    setpage(page + 1)
+  } else {
+    settotalResults(article.length) // Stops spinner when no more articles return
+  }
+}
+
     return (
       <>
       <h2 className='my-3' style={{textAlign: 'center'}}>NewsHub - Top {capitalize(props.category)} Headlines</h2>
@@ -72,7 +78,7 @@ const News=(props)=> {
          <InfiniteScroll
           dataLength={article.length}
           next={fetchMoreData}
-          hasMore={article.length < totalResults }
+          hasMore={article.length < totalResults}
           loader={<Spinner/>}>
 
         <div className="container" >
